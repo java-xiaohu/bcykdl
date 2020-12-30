@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shpowernode.crm.workbench.mapper.DicValueDao">
+  <resultMap id="BaseResultMap" type="com.shpowernode.crm.workbench.bean.DicValue">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="text" jdbcType="VARCHAR" property="text" />
+    <result column="orderNo" jdbcType="VARCHAR" property="orderno" />
+    <result column="typeCode" jdbcType="VARCHAR" property="typecode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, `value`, `text`, orderNo, typeCode
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_dic_value
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectByValue"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_dic_value
+    <where>
+      <if test="id!=null and id!=''">
+        id=#{id}
+      </if>
+      <if test="value!=null and value!=''">
+        value=#{value}
+      </if>
+      <if test="text!=null and text!=''">
+        text=#{text}
+      </if>
+      <if test="orderno!=null and orderno!=''">
+        orderNo=#{orderno}
+      </if>
+      <if test="typecode!=null and typecode!=''">
+        typeCode=#{typecode}
+      </if>
+    </where>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tbl_dic_value
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.shpowernode.crm.workbench.bean.DicValue" useGeneratedKeys="true">
+    insert into tbl_dic_value (`value`, `text`, orderNo, 
+      typeCode)
+    values (#{value,jdbcType=VARCHAR}, #{text,jdbcType=VARCHAR}, #{orderno,jdbcType=VARCHAR}, 
+      #{typecode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.shpowernode.crm.workbench.bean.DicValue" useGeneratedKeys="true">
+    insert into tbl_dic_value
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="value != null">
+        `value`,
+      </if>
+      <if test="text != null">
+        `text`,
+      </if>
+      <if test="orderno != null">
+        orderNo,
+      </if>
+      <if test="typecode != null">
+        typeCode,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="value != null">
+        #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="text != null">
+        #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="orderno != null">
+        #{orderno,jdbcType=VARCHAR},
+      </if>
+      <if test="typecode != null">
+        #{typecode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.shpowernode.crm.workbench.bean.DicValue">
+    update tbl_dic_value
+    <set>
+      <if test="value != null">
+        `value` = #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="text != null">
+        `text` = #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="orderno != null">
+        orderNo = #{orderno,jdbcType=VARCHAR},
+      </if>
+      <if test="typecode != null">
+        typeCode = #{typecode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.shpowernode.crm.workbench.bean.DicValue">
+    update tbl_dic_value
+    set `value` = #{value,jdbcType=VARCHAR},
+      `text` = #{text,jdbcType=VARCHAR},
+      orderNo = #{orderno,jdbcType=VARCHAR},
+      typeCode = #{typecode,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+</mapper>
