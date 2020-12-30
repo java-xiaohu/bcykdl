@@ -408,8 +408,9 @@
 				
 				
 			</div>
-			<div id="tb" style="position: relative;top: 50px;">
+			<div  style="position: relative;top: 50px;">
 				<table class="table table-hover" >
+					<thead>
 						<tr style="color: #B3B3B3;">
 							<td><input type="checkbox" /></td>
 							<td>名称</td>
@@ -420,6 +421,10 @@
 							<td>所有者</td>
 							<td>线索状态</td>
 						</tr>
+					</thead>
+						<tbody id="tby">
+
+						</tbody>
 				</table>
 			</div>
 			
@@ -434,32 +439,72 @@
 
 
 <script type="text/javascript">
-	refresh(1,3)
-	function refresh(pageNum,pageSize){
-		//加载页面后刷新数据
-		$.ajax({
-			url:"/crm/clue/queryAll",
-			data:{"pageNum":pageNum,"pageSize":pageSize },
-			type:"post",
-			dataType: "json",
-			success:function (data) {
-				data.pageInfo.list.forEach(function (t,index) {
-					$("#tb").empty()
-					$("#tb").append("\n" +
-							"\t\t\t\t\t\t\t<td><input type=\"checkbox\" /></td>\n" +
-							"\t\t\t\t\t\t\t<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.jsp';\">"+t.fullname+"</a></td>\n" +
-							"\t\t\t\t\t\t\t<td>"+t.address+"</td>\n" +
-							"\t\t\t\t\t\t\t<td>"+t.phone+"</td>\n" +
-							"\t\t\t\t\t\t\t<td>"+t.mphone+"</td>\n" +
-							"\t\t\t\t\t\t\t<td>"+t.source+"</td>\n" +
-							"\t\t\t\t\t\t\t<td>"+t.owner+"</td>\n" +
-							"\t\t\t\t\t\t\t<td>"+t.state+"</td>\n" +
-							"\t\t\t\t\t\t</tr>")
-				})
 
+
+	//点击查询按钮，查询数据
+	$('#').click(function () {
+		refresh(1,3);
+	});
+
+	//第一次进入到列表页面，要查询第一页数据
+	refresh(1,3);
+
+	//刷新页面的方法
+	function refresh(pageNum,pageSize){
+		//异步查询所有市场活动信息
+		$.ajax({
+			url : '/crm/clue/queryAll',
+			data : {
+				'pageNum' : pageNum,
+				'pageSize' : pageSize
+			},
+			type : 'get',
+			dataType : 'json',
+			success : function(data){//data:resultVo
+				//清空上一次的动态拼接的内容
+				$('#tby').html("");
+				var dataList = data.pageInfo.list;
+
+				for(var i = 0 ; i < dataList.length; i++){
+					$('#tby').append("\n" +
+							"\t\t\t\t\t\t\t<tr><td><input type=\"checkbox\" /></td>\n" +
+							"\t\t\t\t\t\t\t<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='/crm/toView/clue/detail';\">"+dataList[i].fullname+"</a></td>\n" +
+							"\t\t\t\t\t\t\t<td>"+dataList[i].address+"</td>\n" +
+							"\t\t\t\t\t\t\t<td>"+dataList[i].phone+"</td>\n" +
+							"\t\t\t\t\t\t\t<td>"+dataList[i].mphone+"</td>\n" +
+							"\t\t\t\t\t\t\t<td>"+dataList[i].source+"</td>\n" +
+							"\t\t\t\t\t\t\t<td>"+dataList[i].owner+"</td>\n" +
+							"\t\t\t\t\t\t\t<td>"+dataList[i].state+"</td>\n" +
+							"\t\t\t\t\t\t</tr>");
+				}
+
+
+				//利用分页插件查询第一页数据
+				$("#cluepage").bs_pagination({
+					currentPage: data.pageInfo.pageNum, // 页码
+					rowsPerPage: data.pageInfo.pageSize, // 每页显示的记录条数
+					totalPages: data.pageInfo.pages, // 总页数
+					totalRows: data.pageInfo.total, // 总记录条数
+					visiblePageLinks: 3, // 显示几个卡片
+					showGoToPage: true,
+					showRowsPerPage: true,
+					showRowsInfo: true,
+					showRowsDefaultInfo: true,
+					//回调函数，用户每次点击分页插件进行翻页的时候就会触发该函数
+					onChangePage : function(event, obj){
+						//console.log(obj);
+						//alert(obj.currentPage);
+						//刷新页面，obj.currentPage:当前点击的页码
+						refresh(obj.currentPage,obj.rowsPerPage);
+					}
+				});
 			}
-		})
+		});
 	}
+
+
+
+
 
 	//添加线索
 	$("#create-btn").click(function () {
@@ -495,27 +540,7 @@
 		pickerPosition: "bottom-left"
 	});
 
-	//分页插件
-	$("#cluepage").bs_pagination({
-		currentPage: '${sessionScope.pageinfo.pageNum}', // 页码
-		rowsPerPage: "${sessionScope.pageinfo.pageSize}", // 每页显示的记录条数
-		totalPages: "${sessionScope.pageinfo.pages}", // 总页数
-		totalRows:"${sessionScope.pageinfo.total}", // 总记录条数
-		visiblePageLinks: "${sessionScope.pageinfo.list}", // 显示几个卡片
-		showGoToPage: true,
-		showRowsPerPage: true,
-		showRowsInfo: true,
-		showRowsDefaultInfo: true,
-		//回调函数，用户每次点击分页插件进行翻页的时候就会触发该函数
-		onChangePage : function(event, obj){
-			//console.log(obj);
-			alert(obj.currentPage)
 
-			alert(obj.rowsPerPage);
-			//刷新页面，obj.currentPage:当前点击的页码
-			refresh(obj.currentPage,obj.rowsPerPage);
-		}
-	});
 
 </script>
 
